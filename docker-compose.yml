@@ -1,13 +1,30 @@
-version: '3.9'
+version: '3'
 
 services:
-    image: postgres:16
+  myapp:
+    build: .
     environment:
-      POSTGRES_PASSWORD=postgres
+      - CONFIG_PATH=/bin/config/config.yaml
     ports:
-      - 5432:5432
-    networks:
-      - backend
-    volumes:
-      - ./cmd/api:/cmd/api
+      - "8777:8777"
+    depends_on:
+      - postgres
+    command: ["./wait-for", "postgres:5432", "--", "/bin/main"]
 
+  postgres:
+    image: postgres:latest
+    container_name: postgres_container
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+
+  migrate:
+    image: migrate/migrate
+    command: ["-path", "/migrations", "-database", "postgres://postgres:postgres@postgres:5432/task?sslmode=disable", "up"]
+    depends_on:
+      - postgres
+    volumes:
+      - ./migrations:/migrations

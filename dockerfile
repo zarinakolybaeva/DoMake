@@ -1,38 +1,34 @@
-FROM golang:1.21
+# Start from the official Golang image.
+FROM golang:1.22.1 as builder
 
+# Set the Current Working Directory inside the container
 WORKDIR /app
 
-COPY ./go.mod ./go.sum ./
-RUN go mod download && go mod verify
+# Copy go mod and sum files
+COPY go.mod go.sum ./
 
-RUN apt-get update && apt-get install -y wget
+# Copy migration files
 
-RUN wget -O /usr/local/bin/migrate https://github.com/golang-migrate/migrate/releases/download/v4.16.0/migrate.linux-amd64.tar.gz && \
-    tar -xvzf /usr/local/bin/migrate -C /usr/local/bin/ && \
-    chmod +x /usr/local/bin/migrate
+# Download all dependencies. Dependencies will be cached if the go.mod and go.sum files are not changed
+RUN go mod download
 
+# Copy the source code into the container
 COPY . .
 
-RUN go build -o main ./cmd/api/
+# Build the application, disable CGO to create a static binary
+RUN CGO_ENABLED=0 GOOS=windows go build -o demo-app ./cmd/api
 
-CMD ["sh", "-c", "migrate -path ./migrations -database postgres://postgres:postgres@db:5432/task?sslmode=disable up && ./main"]
+# Use a smaller image to run the app
+FROM alpine:latest  
+RUN apk --no-cache add ca-certificates
 
+WORKDIR /root/
 
-#FROM golang:1.21
-#
-#RUN apt-get update && apt-get install -y
-#
-#WORKDIR /app
-#COPY ./go.mod ./go.sum ./
-#RUN go mod download && go mod verify
-#RUN go get -v -u github.com/golang-migrate/migrate/v4
-#
-#COPY . .
-#
-#RUN go build -o main ./cmd/api/
-#
-#
-##RUN migrate -path=./migrations -database=postgres://watch_admin:watch@db:5432/watch_database?sslmode=disable up
-#
-##CMD ["migrate -path ./migrations -database postgres://watch_admin:watch@db:5432/watch_database?sslmode=disable up"]
-#CMD ["./main"]
+RUN ls -la
+
+# Copy the pre-built binary file from the previous stage
+COPY --from=builder /app/demo-app .
+COPY --from=builder /app/migrations ./migrations
+
+# Command to run the executable
+CMD ["./demo-app"]
