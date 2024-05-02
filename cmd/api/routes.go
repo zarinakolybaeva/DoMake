@@ -2,7 +2,6 @@ package main
 
 import (
 	"net/http"
-
 	"github.com/julienschmidt/httprouter"
 )
 
@@ -23,16 +22,18 @@ func (app *application) routes() http.Handler {
 
 	// Use the requirePermission() middleware on each of the /v1/tasks** endpoints,
 	// passing in the required permission code as the first parameter.
-	// router.HandlerFunc(http.MethodGet, "/v1/tasks", app.requirePermission("tasks:read", app.listTasksHandler))
-	// router.HandlerFunc(http.MethodPost, "/v1/tasks", app.requirePermission("tasks:write", app.createTaskHandler))
-	// router.HandlerFunc(http.MethodGet, "/v1/tasks/:id", app.requirePermission("tasks:read", app.showTaskHandler))
-	// // Require a PATCH request, rather than PUT.
+	router.HandlerFunc(http.MethodGet, "/v1/tasks", app.requirePermission("tasks:read", app.listTasksHandler))
+	router.HandlerFunc(http.MethodGet, "/v1/tasks/:id", app.requirePermission("tasks:read", app.showTaskHandler))
+
+
+	// Require a PATCH request, rather than PUT.
 	// router.HandlerFunc(http.MethodPatch, "/v1/tasks/:id", app.requirePermission("tasks:write", app.updateTaskHandler))
 	// router.HandlerFunc(http.MethodDelete, "/v1/tasks/:id", app.requirePermission("tasks:write", app.deleteTaskHandler))
-    router.HandlerFunc(http.MethodGet, "/v1/tasks", app.listTasksHandler)
+		// router.HandlerFunc(http.MethodPost, "/v1/tasks", app.requirePermission("tasks:write", app.createTaskHandler))
+//     router.HandlerFunc(http.MethodGet, "/v1/tasks", app.listTasksHandler)
+
     router.HandlerFunc(http.MethodPost, "/v1/tasks", app.createTaskHandler)
-    router.HandlerFunc(http.MethodGet, "/v1/tasks/:id", app.showTaskHandler)
-// Require a PATCH request, rather than PUT.
+
     router.HandlerFunc(http.MethodPatch, "/v1/tasks/:id", app.updateTaskHandler)
 // No permission check for deletion.
     router.HandlerFunc(http.MethodDelete, "/v1/tasks/:id", app.deleteTaskHandler)

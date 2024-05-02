@@ -11,7 +11,6 @@ import (
 
 	"github.com/zarinakolybaeva/DoMake/internal/data"
 	"github.com/zarinakolybaeva/DoMake/internal/jsonlog"
-	
 
 	// Import the pq driver so that it can register itself with the database/sql
 	// package. Note that we alias this import to the blank identifier, to stop the Go
@@ -65,13 +64,13 @@ type application struct {
 func main() {
 	var cfg config
 
-	flag.IntVar(&cfg.port, "port", 3333, "API server port")
+	flag.IntVar(&cfg.port, "port", 8890, "API server port")
 	flag.StringVar(&cfg.env, "env", "development", "Environment (development|staging|production)")
 
 	// Use the value of the GREENLIGHT_DB_DSN environment variable as the default value
 	// for our db-dsn command-line flag.
 	//flag.StringVar(&cfg.db.dsn, "db-dsn", os.Getenv("TASKNINJA_DB_DSN"), "PostgreSQL DSN")
-	flag.StringVar(&cfg.db.dsn, "db-dsn", "postgres://postgres:postgres@localhost/task?sslmode=disable", "PostgreSQL DSN")
+	flag.StringVar(&cfg.db.dsn, "db-dsn", "postgres://postgres:postgres@db:5432/postgres?sslmode=disable", "PostgreSQL DSN")
 
 	// Read the connection pool settings from command-line flags into the config struct.
 	flag.IntVar(&cfg.db.maxOpenConns, "db-max-open-conns", 25, "PostgreSQL max open connections")

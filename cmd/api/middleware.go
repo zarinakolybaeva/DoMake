@@ -106,6 +106,8 @@ func (app *application) authenticate(next http.Handler) http.Handler {
 		// Retrieve the value of the Authorization header from the request. This will
 		// return the empty string "" if there is no such header found.
 		authorizationHeader := r.Header.Get("Authorization")
+
+
 		// If there is no Authorization header found, use the contextSetUser() helper
 		// that we just made to add the AnonymousUser to the request context. Then we
 		// call the next handler in the chain and return without executing any of the
