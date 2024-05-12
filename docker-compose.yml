@@ -6,16 +6,16 @@ services:
     environment:
       - CONFIG_PATH=/bin/config/config.yaml
     ports:
-      - "8777:8777"
+      - "8080:8080"
     depends_on:
       - postgres
-    command: ["./wait-for", "postgres:5432", "--", "/bin/main"]
+    # command: ["./wait-for", "postgres:5432", "--", "/bin/main"]
 
   postgres:
     image: postgres:latest
     container_name: postgres_container
     environment:
-      POSTGRES_DB: postgres
+      POSTGRES_DB: task
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     ports:

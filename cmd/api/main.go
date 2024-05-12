@@ -64,7 +64,7 @@ type application struct {
 func main() {
 	var cfg config
 
-	flag.IntVar(&cfg.port, "port", 8890, "API server port")
+	flag.IntVar(&cfg.port, "port", 1234, "API server port")
 	flag.StringVar(&cfg.env, "env", "development", "Environment (development|staging|production)")
 
 	// Use the value of the GREENLIGHT_DB_DSN environment variable as the default value

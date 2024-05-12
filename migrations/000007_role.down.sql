@@ -1,2 +1,1 @@
--- Отмена создания таблицы users
-DROP TABLE users;
+DROP DATABASE IF EXISTS task;
